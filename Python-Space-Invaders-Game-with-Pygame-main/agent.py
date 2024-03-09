@@ -1,7 +1,10 @@
 import numpy as np
+import random
+
+MOVES = ['r', 'l', 's']
 
 class Agent:
-    def __init__(self, game, num_states, num_actions, alpha=0.5, gamma=0.9, epsilon=0.1):
+    def __init__(self, game = "", num_states=0, num_actions=0, alpha=0.5, gamma=0.9, epsilon=0.1):
         print("Agent file is running")
         self.game = game
         self.num_states = num_states
@@ -14,9 +17,9 @@ class Agent:
     def get_state_hash(self, state):
         pass
 
-    def choose_action(self, state):
-        pass
-  
+    def choose_action(self, state=''):
+        return random.choice(MOVES)
+    
     def update_q_table(self, state, action, reward, next_state):
         pass
 

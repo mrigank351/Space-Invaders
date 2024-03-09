@@ -1,9 +1,13 @@
 import pygame
 from laser import Laser
+from agent import Agent
 
 class Spaceship(pygame.sprite.Sprite):
 	def __init__(self, screen_width, screen_height, offset):
 		super().__init__()
+
+		self.agent = Agent()
+
 		self.offset = offset
 		self.screen_width = screen_width
 		self.screen_height = screen_height
@@ -17,15 +21,16 @@ class Spaceship(pygame.sprite.Sprite):
 		self.laser_sound = pygame.mixer.Sound("Sounds/laser.ogg")
 
 	def get_user_input(self):
-		keys = pygame.key.get_pressed()
+		#keys = pygame.key.get_pressed()
+		keys = self.agent.choose_action()
 
-		if keys[pygame.K_RIGHT]:
+		if keys == 'r':
 			self.rect.x += self.speed
 
-		if keys[pygame.K_LEFT]:
+		if keys == 'l':
 			self.rect.x -= self.speed
 
-		if keys[pygame.K_SPACE] and self.laser_ready:
+		if keys == 's' and self.laser_ready:
 			self.laser_ready = False
 			laser = Laser(self.rect.center, 5, self.screen_height)
 			self.lasers_group.add(laser)
