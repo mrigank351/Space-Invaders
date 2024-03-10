@@ -5,7 +5,6 @@ from obstacle import grid
 from alien import Alien
 from laser import Laser
 from alien import MysteryShip
-import numpy as np
 
 class Game:
 	def __init__(self, screen_width, screen_height, offset):
@@ -24,12 +23,16 @@ class Game:
 		self.run = True
 		self.score = 0
 		self.highscore = 0
-		self.max_lives = 3
-		self.max_score = 10000 
 		self.explosion_sound = pygame.mixer.Sound("Sounds/explosion.ogg")
 		self.load_highscore()
 		pygame.mixer.music.load("Sounds/music.ogg")
 		pygame.mixer.music.play(-1)
+
+        # Events
+		SHOOT_LASER = pygame.USEREVENT
+		pygame.time.set_timer(SHOOT_LASER, 300)
+		MYSTERYSHIP = pygame.USEREVENT + 1
+		pygame.time.set_timer(MYSTERYSHIP, random.randint(4000,8000))
 
 	def create_obstacles(self):
 		obstacle_width = len(grid[0]) * 3
@@ -155,48 +158,25 @@ class Game:
 		except FileNotFoundError:
 			self.highscore = 0
 
-	def get_state(self):
-        # Return the current state of the game
-        # This will depend on how you've chosen to represent the state
-        # For example, you might return the positions of the spaceship and aliens
-		state = {
-            "spaceship": self.spaceship_group.sprite.rect.center,
-            "aliens": [alien.rect.center for alien in self.aliens_group.sprites()],
-            "obstacles": [[block.rect.center for block in obstacle.blocks_group.sprites()] for obstacle in self.obstacles],
-            "lives": self.lives,
-            "score": self.score
-        }
-		return state
-
-	def discretize_state(self, state):
-		discretized_state = {}
-		for key, value in state.items():
-			if isinstance(value, float):
-				discretized_state[key] = int(round(value))  # Round floats to integers
-			elif isinstance(value, bool):
-				discretized_state[key] = int(value)  # Convert bool to 0 or 1 (int)
-			else:
-				discretized_state[key] = value  # Keep other data types unchanged
-		return discretized_state
-	
 	def step(self, action):
-		aliens_hit = False
 		reward = 0
-		if self.check_for_collisions():  # Any collision (including hitting aliens)
-			reward = -1  # Penalize for collisions
-		else:
-		# Additional rewards for specific actions (e.g., hitting aliens)
-			for laser_sprite in self.spaceship_group.sprite.lasers_group:
-				aliens_hit = pygame.sprite.spritecollide(laser_sprite, self.aliens_group, True)
-		if aliens_hit:
-			reward += len(aliens_hit) * 10  # Reward based on number of aliens hit
-			return reward
+        # Perform the action
+		if action == 0:
+			self.spaceship_group.sprite.move_left()
+		elif action == 1:
+			self.spaceship_group.sprite.move_right()
+		elif action == 2:
+			self.spaceship_group.sprite.shoot_laser()
+			reward += 0.1  # Small positive reward for firing
 
-	def reset(self):
-        # Reset the game to its initial state
-		self.spaceship_group.sprite.rect.center = (self.screen_width / 2, self.screen_height - 50)
+        # Calculate the reward
+        # Check if any alien was hit
 		for alien in self.aliens_group.sprites():
-			alien.rect.center = (random.randint(0, self.screen_width), random.randint(0, int(self.screen_height / 2)))
-		self.lives = 3
-		self.score = 0
-		self.run = True
+			if pygame.sprite.spritecollide(alien, self.spaceship_group.sprite.lasers_group, True):
+				reward += 100  # positive reward for hitting an alien
+
+        # Check if the spaceship lost a life
+		if pygame.sprite.spritecollide(self.spaceship_group.sprite, self.alien_lasers_group, True):
+			reward -= 500  # negative reward for losing a life
+		return reward
+

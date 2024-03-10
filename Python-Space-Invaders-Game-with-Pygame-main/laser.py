@@ -1,7 +1,7 @@
 import pygame
 
 class Laser(pygame.sprite.Sprite):
-	def __init__(self, position, speed, screen_height):
+	def __init__(self, position, speed, screen_height = 700):
 		super().__init__()
 		self.image = pygame.Surface((4,15))
 		self.image.fill((243, 216, 63))

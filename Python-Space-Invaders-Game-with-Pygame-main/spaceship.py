@@ -53,3 +53,13 @@ class Spaceship(pygame.sprite.Sprite):
 	def reset(self):
 		self.rect = self.image.get_rect(midbottom = ((self.screen_width + self.offset)/2, self.screen_height))
 		self.lasers_group.empty()
+
+	def move_left(self):
+		self.rect.x -= self.speed  # move to the left by 'speed' pixels
+
+	def move_right(self):
+		self.rect.x += self.speed  # move to the right by 'speed' pixels
+
+	def shoot_laser(self):
+		laser = Laser(self.rect.center, self.screen_height)  # create a new Laser object
+		self.lasers_group.add(laser)  # add the laser to the lasers_group
