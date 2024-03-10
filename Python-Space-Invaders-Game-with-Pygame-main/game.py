@@ -19,7 +19,7 @@ class Game:
 		self.aliens_direction = 1
 		self.alien_lasers_group = pygame.sprite.Group()
 		self.mystery_ship_group = pygame.sprite.GroupSingle()
-		self.lives = 3
+		self.lives = 1
 		self.run = True
 		self.score = 0
 		self.highscore = 0
@@ -135,7 +135,7 @@ class Game:
 
 	def reset(self):
 		self.run = True
-		self.lives = 3
+		self.lives = 1
 		self.spaceship_group.sprite.reset()
 		self.aliens_group.empty()
 		self.alien_lasers_group.empty()
@@ -175,6 +175,7 @@ class Game:
         # Check if any alien was hit
 		for alien in self.aliens_group.sprites():
 			if pygame.sprite.spritecollide(alien, self.spaceship_group.sprite.lasers_group, True):
+				print("HIT")
 				reward += 100  # positive reward for hitting an alien
 
         # Check if the spaceship lost a life

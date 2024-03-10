@@ -16,9 +16,10 @@ font = pygame.font.Font("Font/monogram.ttf", 40)
 level_surface = font.render("LEVEL 01", False, YELLOW)
 game_over_surface = font.render("GAME OVER", False, YELLOW)
 score_text_surface = font.render("SCORE", False, YELLOW)
-highscore_text_surface = font.render("HIGH-SCORE", False, YELLOW)
+highscore_text_surface = font.render("REWARD", False, YELLOW)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH + OFFSET, SCREEN_HEIGHT + 2*OFFSET))
+#pygame.display.set_mode((1,1), pygame.NOFRAME)
 pygame.display.set_caption("Python Space Invaders")
 
 clock = pygame.time.Clock()
@@ -41,9 +42,14 @@ SHOOT_LASER = pygame.USEREVENT
 pygame.time.set_timer(SHOOT_LASER, 300)
 
 MYSTERYSHIP = pygame.USEREVENT + 1
+random.seed(0)
 pygame.time.set_timer(MYSTERYSHIP, random.randint(4000,8000))
 
+interations = 100
+
 while True:
+
+    
     # Get the current state of the game
     state = agent.get_state(game)
 
@@ -75,6 +81,14 @@ while True:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and game.run == False:
             game.reset()
+    
+    if interations > 0:
+        if game.run == False:
+            game.reset()
+            interations-= 1
+            print("Interactions left:", interations)
+    else:
+        print("Training complete")
 
     #Updating
     if game.run:
@@ -106,8 +120,8 @@ while True:
     score_surface = font.render(formatted_score, False, YELLOW)
     screen.blit(score_surface, (50, 40, 50, 50))
     screen.blit(highscore_text_surface, (550, 15, 50, 50))
-    formatted_highscore = str(game.highscore).zfill(5)
-    highscore_surface = font.render(formatted_highscore, False, YELLOW)
+    formatted_reward = str(reward).zfill(5)
+    highscore_surface = font.render(formatted_reward, False, YELLOW)
     screen.blit(highscore_surface, (625, 40, 50, 50))
 
     game.spaceship_group.draw(screen)
@@ -119,7 +133,7 @@ while True:
     game.mystery_ship_group.draw(screen)
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(600)
     agent.save_q_table("q_table.txt")
 
 
