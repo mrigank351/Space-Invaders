@@ -1,6 +1,7 @@
 import pygame, sys, random
 from game import Game
-from qlearningagent import QLearningAgent 
+from qlearningagent import QLearningAgent
+import sys
 
 pygame.init()
 
@@ -29,7 +30,7 @@ game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, OFFSET)
 # 1 - move right
 # 2 - shoot
 actions = [0, 1, 2]             
-agent = QLearningAgent(actions) 
+agent = QLearningAgent(actions)
 
 try:
     agent.load_q_table("q_table.txt")  # Load from the saved file

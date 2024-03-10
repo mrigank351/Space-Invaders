@@ -159,15 +159,17 @@ class Game:
 			self.highscore = 0
 
 	def step(self, action):
+		self.spaceship_group.sprite.apply_input(action)
 		reward = 0
-        # Perform the action
-		if action == 0:
-			self.spaceship_group.sprite.move_left()
-		elif action == 1:
-			self.spaceship_group.sprite.move_right()
-		elif action == 2:
-			self.spaceship_group.sprite.shoot_laser()
-			reward += 0.1  # Small positive reward for firing
+
+
+        # # Perform the action
+		# if action == 0:
+		# 	self.spaceship_group.sprite.move_left()
+		# elif action == 1:
+		# 	self.spaceship_group.sprite.move_right()
+		if action == 2:
+			reward -= 0.1  # Small positive reward for firing
 
         # Calculate the reward
         # Check if any alien was hit
